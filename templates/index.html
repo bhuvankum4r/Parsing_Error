@@ -12,7 +12,7 @@
             padding: 20px;
             text-align: center;
         }
-       .container {
+        .container {
             max-width: 600px;
             margin: auto;
             background-color: #fff;
@@ -26,14 +26,14 @@
         form {
             margin-bottom: 20px;
         }
-       .file-upload {
+        .file-upload {
             display: flex;
             justify-content: center;
             align-items: center;
             flex-direction: column;
             margin-bottom: 20px;
         }
-       .file-upload input[type="file"] {
+        .file-upload input[type="file"] {
             padding: 10px;
             margin-bottom: 10px;
             border: 2px solid #ccc;
@@ -41,7 +41,7 @@
             font-size: 16px;
             width: 300px;
         }
-       .file-upload input[type="submit"] {
+        .file-upload input[type="submit"] {
             padding: 10px 20px;
             background-color: #4CAF50;
             color: white;
@@ -50,10 +50,10 @@
             cursor: pointer;
             font-size: 16px;
         }
-       .file-upload input[type="submit"]:hover {
+        .file-upload input[type="submit"]:hover {
             background-color: #45a049;
         }
-       .results {
+        .results {
             text-align: left;
             margin-top: 20px;
             padding: 10px;
@@ -61,22 +61,44 @@
             border: 1px solid #ddd;
             border-radius: 5px;
         }
-       .results h2 {
+        .results h2 {
             color: #333;
             margin-bottom: 10px;
         }
-       .results ul {
+        .results ul {
             list-style-type: none;
             padding: 0;
         }
-       .results li {
+        .results li {
             margin-bottom: 10px;
         }
-       .error {
+        .error {
             color: red;
         }
-       .file-info {
+        .file-info {
             margin-top: 10px;
+        }
+        .explanation {
+            text-align: left;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+        .explanation h3 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+        .explanation ol {
+            padding-left: 20px;
+        }
+        .explanation ul {
+            list-style-type: none;
+            padding: 0;
+        }
+        .explanation li {
+            margin-bottom: 10px;
         }
     </style>
 </head>
@@ -111,26 +133,28 @@
         {% if error %}
             <p class="error">{{ error }}</p>
         {% endif %}
+
+        {% if explanation %}
+            <div class="explanation">
+                {{ explanation | safe }}
+            </div>
+        {% endif %}
     </div>
     
     <script>
         // Display selected file name and type
-        document.getElementById('upload-form').addEventListener('submit', function(event) {
-            event.preventDefault(); // Prevent form submission
-            var fileInput = document.getElementById('file');
+        document.getElementById('file').addEventListener('change', function(event) {
             var fileInfo = document.getElementById('file-info');
             
-            if (fileInput.files.length > 0) {
-                var fileName = fileInput.files[0].name;
+            if (this.files.length > 0) {
+                var fileName = this.files[0].name;
                 var fileType = fileName.split('.').pop().toUpperCase(); // Get file extension
                 fileInfo.innerHTML = '<strong>Selected File:</strong> ' + fileName + ' (' + fileType + ')';
             } else {
                 fileInfo.innerHTML = '';
             }
-
-            // Submit the form
-            this.submit();
         });
     </script>
+    
 </body>
 </html>

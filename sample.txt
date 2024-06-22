@@ -1,3 +1,51 @@
-Artificial intelligence refers to the simulation of human intelligence processes by machines, especially computer systems. These processes include learning, reasoning, problem-solving, perception, and language understanding. AI can be categorized as either weak or strong. Weak AI, also known as narrow AI, is an AI system that is designed and trained for a particular task. Virtual personal assistants, such as Apple's Siri, are a form of weak AI. Strong AI, also known as artificial general intelligence, is an AI system with generalized human cognitive abilities. When presented with an unfamiliar task, a strong AI system is able to find a solution without human intervention.
-
-artificial intelligence refers simulation human intelligence processes machines especially computer systems processes include learning reasoning problem-solving perception language understanding ai categorized either weak strong weak ai also known narrow ai ai system designed trained particular task virtual personal assistants such apple siri form weak ai strong ai also known artificial general intelligence ai system generalized human cognitive abilities presented unfamiliar task strong ai system able find solution without human intervention
+explanation = f"""
+    <h3>Step-by-Step Explanation</h3>
+    <ol>
+        <li><strong>Text Preprocessing</strong><br>
+            The given text about artificial intelligence is preprocessed before being fed into the LDA model. This preprocessing typically involves:
+            <ul>
+                <li>Tokenization: Breaking down the text into individual words or tokens.</li>
+                <li>Removing Stop Words: Filtering out common words (like "and", "the", etc.) that do not contribute much meaning to the analysis.</li>
+                <li>Lowercasing: Converting all words to lowercase to ensure uniformity.</li>
+                <li>Stemming or Lemmatization: Reducing words to their root forms (e.g., "learning" to "learn").</li>
+            </ul>
+            <pre>Original Text: {text}</pre>
+            <pre>Preprocessed Text: {' '.join(tokens)}</pre>
+        </li>
+        <li><strong>Creating the Document-Term Matrix</strong><br>
+            After preprocessing, the text is transformed into a numerical representation that the LDA model can work with. This involves:
+            <ul>
+                <li>Creating a Dictionary: Mapping each unique word in the corpus to an ID.</li>
+                <li>Bag-of-Words (BoW): Representing each document as a vector of word frequencies.</li>
+            </ul>
+            Example:
+            <pre>Document: {tokens}</pre>
+        </li>
+        <li><strong>Training the LDA Model</strong><br>
+            The LDA (Latent Dirichlet Allocation) model is trained on the document-term matrix. The LDA model works by:
+            <ul>
+                <li>Assuming that each document is a mixture of topics.</li>
+                <li>Assuming that each topic is a mixture of words.</li>
+                <li>Iteratively refining these assumptions to best explain the observed data.</li>
+            </ul>
+            Number of Topics: 2
+        </li>
+        <li><strong>Output Interpretation</strong><br>
+            After training, the LDA model provides the topics with the top words and their associated weights. The output provided is:
+            <pre>{topics}</pre>
+            Explanation:
+            <ul>
+                <li>Topic 1: <pre>{topics[0]}</pre></li>
+                <li>Topic 2: <pre>{topics[1]}</pre></li>
+            </ul>
+        </li>
+        <li><strong>Interpretation of Topics</strong><br>
+            Based on the top words and their weights, we can interpret the topics:
+            <ul>
+                <li>Topic 1 likely represents general discussions about AI systems, intelligence, human aspects, and strong AI.</li>
+                <li>Topic 2 likely represents discussions contrasting weak AI and strong AI.</li>
+            </ul>
+        </li>
+    </ol>
+    """
+    return explanation

@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Topic Modeling Analysis</title>
+</head>
+<body>
+    <h1>Upload a Text File for Topic Modeling Analysis</h1>
+    <form action="/analyze" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Analyze">
+    </form>
+    <div>
+        {{ explanation|safe }}
+    </div>
+</body>
+</html>

@@ -3,92 +3,63 @@ from gensim import corpora, models
 import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
-import re
+import os
+import docx2txt
+from PyPDF2 import PdfReader
 
+# Ensure NLTK resources are downloaded
 nltk.download('punkt')
 nltk.download('stopwords')
 
+# Initialize Flask application
 app = Flask(__name__)
 
+# Homepage route - renders index.html for file upload
 @app.route('/')
 def index():
     return render_template('index.html')
 
+# Route for file upload and analysis
 @app.route('/analyze', methods=['POST'])
 def analyze():
+    # Retrieve uploaded file from form
     file = request.files['file']
-    text = file.read().decode('utf-8')
-    
-    # Step 1: Text Preprocessing
-    stop_words = set(stopwords.words('english'))
-    text = re.sub(r'\s+', ' ', text)
+    file_extension = os.path.splitext(file.filename)[1].lower()
+
+    # Check file type and process accordingly
+    if file_extension == '.txt':
+        text = file.read().decode('utf-8')
+    elif file_extension == '.docx':
+        text = docx2txt.process(file)
+    elif file_extension == '.pdf':
+        pdf_reader = PdfReader(file)
+        text = ''
+        for page in pdf_reader.pages:
+            text += page.extract_text()
+    else:
+        return render_template('index.html', error='Invalid file type. Please upload a txt, docx, or pdf file.')
+
+    # Tokenization and stop word removal
     tokens = word_tokenize(text.lower())
-    tokens = [word for word in tokens if word.isalnum()]
-    tokens = [word for word in tokens if word not in stop_words]
+    stop_words = set(stopwords.words('english'))
+    filtered_tokens = [token for token in tokens if token.isalpha() and token not in stop_words]
 
-    # Step 2: Creating the Document-Term Matrix
-    dictionary = corpora.Dictionary([tokens])
-    corpus = [dictionary.doc2bow(tokens)]
+    # Create dictionary and corpus
+    dictionary = corpora.Dictionary([filtered_tokens])
+    corpus = [dictionary.doc2bow(filtered_tokens)]
 
-    # Step 3: Training the LDA Model
-    lda_model = models.LdaModel(corpus, num_topics=2, id2word=dictionary, passes=15)
+    # Build LDA model
+    lda_model = models.LdaModel(corpus, num_topics=2, id2word=dictionary)
 
-    # Step 4: Output Interpretation
-    topics = lda_model.print_topics(num_words=5)
+    # Get topics and their probabilities
+    topics = lda_model.show_topics(formatted=False)
 
-    # Detailed explanation for the output
-    explanation = f"""
-    <h3>Step-by-Step Explanation</h3>
-    <ol>
-        <li><strong>Text Preprocessing</strong><br>
-            The given text about artificial intelligence is preprocessed before being fed into the LDA model. This preprocessing typically involves:
-            <ul>
-                <li>Tokenization: Breaking down the text into individual words or tokens.</li>
-                <li>Removing Stop Words: Filtering out common words (like "and", "the", etc.) that do not contribute much meaning to the analysis.</li>
-                <li>Lowercasing: Converting all words to lowercase to ensure uniformity.</li>
-                <li>Stemming or Lemmatization: Reducing words to their root forms (e.g., "learning" to "learn").</li>
-            </ul>
-            <pre>Original Text: {text}</pre>
-            <pre>Preprocessed Text: {' '.join(tokens)}</pre>
-        </li>
-        <li><strong>Creating the Document-Term Matrix</strong><br>
-            After preprocessing, the text is transformed into a numerical representation that the LDA model can work with. This involves:
-            <ul>
-                <li>Creating a Dictionary: Mapping each unique word in the corpus to an ID.</li>
-                <li>Bag-of-Words (BoW): Representing each document as a vector of word frequencies.</li>
-            </ul>
-            Example:
-            <pre>Document: {tokens}</pre>
-        </li>
-        <li><strong>Training the LDA Model</strong><br>
-            The LDA (Latent Dirichlet Allocation) model is trained on the document-term matrix. The LDA model works by:
-            <ul>
-                <li>Assuming that each document is a mixture of topics.</li>
-                <li>Assuming that each topic is a mixture of words.</li>
-                <li>Iteratively refining these assumptions to best explain the observed data.</li>
-            </ul>
-            Number of Topics: 2
-        </li>
-        <li><strong>Output Interpretation</strong><br>
-            After training, the LDA model provides the topics with the top words and their associated weights. The output provided is:
-            <pre>{topics}</pre>
-            Explanation:
-            <ul>
-                <li>Topic 1: <pre>{topics[0]}</pre></li>
-                <li>Topic 2: <pre>{topics[1]}</pre></li>
-            </ul>
-        </li>
-        <li><strong>Interpretation of Topics</strong><br>
-            Based on the top words and their weights, we can interpret the topics:
-            <ul>
-                <li>Topic 1 likely represents general discussions about AI systems, intelligence, human aspects, and strong AI.</li>
-                <li>Topic 2 likely represents discussions contrasting weak AI and strong AI.</li>
-            </ul>
-        </li>
-    </ol>
-    """
+    # Extract file name and type
+    filename = file.filename
+    filetype = file_extension[1:].upper()  # Remove dot from extension and convert to uppercase
 
-    return render_template('index.html', explanation=explanation)
+    # Render results in HTML template with file name, type, and topics
+    return render_template('index.html', topics=topics, filename=filename, filetype=filetype)
 
 if __name__ == '__main__':
     app.run(debug=True)

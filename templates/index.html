@@ -1,16 +1,136 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Topic Modeling Analysis</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Topic Modeling with LDA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+            text-align: center;
+        }
+       .container {
+            max-width: 600px;
+            margin: auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        form {
+            margin-bottom: 20px;
+        }
+       .file-upload {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            margin-bottom: 20px;
+        }
+       .file-upload input[type="file"] {
+            padding: 10px;
+            margin-bottom: 10px;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 300px;
+        }
+       .file-upload input[type="submit"] {
+            padding: 10px 20px;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+       .file-upload input[type="submit"]:hover {
+            background-color: #45a049;
+        }
+       .results {
+            text-align: left;
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+       .results h2 {
+            color: #333;
+            margin-bottom: 10px;
+        }
+       .results ul {
+            list-style-type: none;
+            padding: 0;
+        }
+       .results li {
+            margin-bottom: 10px;
+        }
+       .error {
+            color: red;
+        }
+       .file-info {
+            margin-top: 10px;
+        }
+    </style>
 </head>
 <body>
-    <h1>Upload a Text File for Topic Modeling Analysis</h1>
-    <form action="/analyze" method="post" enctype="multipart/form-data">
-        <input type="file" name="file">
-        <input type="submit" value="Analyze">
-    </form>
-    <div>
-        {{ explanation|safe }}
+    <div class="container">
+        <h1>Topic Modeling with LDA</h1>
+
+        <form action="/analyze" method="post" enctype="multipart/form-data" class="file-upload" id="upload-form">
+            <input type="file" name="file" id="file" accept=".txt,.docx,.pdf" required>
+            <br>
+            <input type="submit" value="Upload and Analyze">
+        </form>
+
+        <div class="file-info" id="file-info">
+            <!-- File name and type will be displayed here -->
+        </div>
+
+        {% if topics %}
+            <div class="results">
+                <h2>Topics Found:</h2>
+                <ul>
+                    {% for topic_id, topic in topics %}
+                        <li>
+                            <strong>Topic {{ topic_id + 1 }}:</strong><br>
+                            Words: {{ topic }}
+                        </li>
+                    {% endfor %}
+                </ul>
+            </div>
+        {% endif %}
+
+        {% if error %}
+            <p class="error">{{ error }}</p>
+        {% endif %}
     </div>
+    
+    <script>
+        // Display selected file name and type
+        document.getElementById('upload-form').addEventListener('submit', function(event) {
+            event.preventDefault(); // Prevent form submission
+            var fileInput = document.getElementById('file');
+            var fileInfo = document.getElementById('file-info');
+            
+            if (fileInput.files.length > 0) {
+                var fileName = fileInput.files[0].name;
+                var fileType = fileName.split('.').pop().toUpperCase(); // Get file extension
+                fileInfo.innerHTML = '<strong>Selected File:</strong> ' + fileName + ' (' + fileType + ')';
+            } else {
+                fileInfo.innerHTML = '';
+            }
+
+            // Submit the form
+            this.submit();
+        });
+    </script>
 </body>
 </html>

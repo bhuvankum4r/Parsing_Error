@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Topic Modeling with LDA</title>
     <style>
+        /* General body styling */
         body {
             font-family: Arial, sans-serif;
             background-color: #f0f0f0;
@@ -12,6 +13,7 @@
             padding: 20px;
             text-align: center;
         }
+        /* Container styling */
         .container {
             max-width: 600px;
             margin: auto;
@@ -20,12 +22,15 @@
             border-radius: 10px;
             box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
+        /* Heading styling */
         h1 {
             color: #333;
         }
+        /* Form styling */
         form {
             margin-bottom: 20px;
         }
+        /* File upload section styling */
         .file-upload {
             display: flex;
             justify-content: center;
@@ -33,6 +38,7 @@
             flex-direction: column;
             margin-bottom: 20px;
         }
+        /* File input styling */
         .file-upload input[type="file"] {
             padding: 10px;
             margin-bottom: 10px;
@@ -41,6 +47,7 @@
             font-size: 16px;
             width: 300px;
         }
+        /* Submit button styling */
         .file-upload input[type="submit"] {
             padding: 10px 20px;
             background-color: #4CAF50;
@@ -50,9 +57,11 @@
             cursor: pointer;
             font-size: 16px;
         }
+        /* Submit button hover effect */
         .file-upload input[type="submit"]:hover {
             background-color: #45a049;
         }
+        /* Results section styling */
         .results {
             text-align: left;
             margin-top: 20px;
@@ -65,6 +74,7 @@
             color: #333;
             margin-bottom: 10px;
         }
+        /* Results list styling */
         .results ul {
             list-style-type: none;
             padding: 0;
@@ -72,12 +82,15 @@
         .results li {
             margin-bottom: 10px;
         }
+        /* Error message styling */
         .error {
             color: red;
         }
+        /* File information section styling */
         .file-info {
             margin-top: 10px;
         }
+        /* Explanation section styling */
         .explanation {
             text-align: left;
             margin-top: 20px;
@@ -90,9 +103,11 @@
             color: #333;
             margin-bottom: 10px;
         }
+        /* Explanation ordered list styling */
         .explanation ol {
             padding-left: 20px;
         }
+        /* Explanation unordered list styling */
         .explanation ul {
             list-style-type: none;
             padding: 0;
@@ -106,12 +121,14 @@
     <div class="container">
         <h1>Topic Modeling with LDA</h1>
 
+        <!-- File upload form -->
         <form action="/analyze" method="post" enctype="multipart/form-data" class="file-upload" id="upload-form">
             <input type="file" name="file" id="file" accept=".txt,.docx,.pdf" required>
             <br>
             <input type="submit" value="Upload and Analyze">
         </form>
 
+        <!-- Display selected file info -->
         <div class="file-info" id="file-info">
             <!-- File name and type will be displayed here -->
         </div>
@@ -129,7 +146,6 @@
                 </ul>
             </div>
         {% endif %}
-
         {% if error %}
             <p class="error">{{ error }}</p>
         {% endif %}

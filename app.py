@@ -4,8 +4,8 @@ import nltk
 from nltk.corpus import stopwords
 from nltk.tokenize import word_tokenize
 import os
-import docx2txt
-from PyPDF2 import PdfReader
+import docx2txt  # Library for reading .docx files
+from PyPDF2 import PdfReader  # Library for reading .pdf files
 import re
 
 # Ensure NLTK resources are downloaded
@@ -16,52 +16,52 @@ nltk.download('stopwords')
 app = Flask(__name__)
 
 def preprocess_text(text):
-    stop_words = set(stopwords.words('english'))
+    stop_words = set(stopwords.words('english'))  # Define stop words
     text = re.sub(r'\s+', ' ', text)  # Remove extra spaces
-    tokens = word_tokenize(text.lower())  # Tokenization
+    tokens = word_tokenize(text.lower())  # Tokenization: split text into words
     tokens = [word for word in tokens if word.isalnum()]  # Remove non-alphanumeric tokens
     tokens = [word for word in tokens if word not in stop_words]  # Remove stop words
     return tokens
 
 def read_text_from_file(file):
-    file_extension = os.path.splitext(file.filename)[1].lower()
+    file_extension = os.path.splitext(file.filename)[1].lower()  # Get the file extension
     if file_extension == '.txt':
-        return file.read().decode('utf-8')
+        return file.read().decode('utf-8')  # Read .txt file
     elif file_extension == '.docx':
-        return docx2txt.process(file)
+        return docx2txt.process(file)  # Read .docx file
     elif file_extension == '.pdf':
-        pdf_reader = PdfReader(file)
+        pdf_reader = PdfReader(file)  # Initialize PDF reader
         text = ''
         for page in pdf_reader.pages:
-            text += page.extract_text()
+            text += page.extract_text()  # Extract text from each page
         return text
     else:
-        return None
+        return None  # Return None for unsupported file types
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html')  # Render the index.html template
 
 @app.route('/analyze', methods=['POST'])
 def analyze():
-    file = request.files['file']
-    text = read_text_from_file(file)
+    file = request.files['file']  # Get the uploaded file
+    text = read_text_from_file(file)  # Read text from the file
     
     if text is None:
-        return render_template('index.html', error='Invalid file type. Please upload a txt, docx, or pdf file.')
+        return render_template('index.html', error='Invalid file type. Please upload a txt, docx, or pdf file.')  # Handle invalid file type
 
-    tokens = preprocess_text(text)
+    tokens = preprocess_text(text)  # Preprocess the text
     
-    dictionary = corpora.Dictionary([tokens])
-    corpus = [dictionary.doc2bow(tokens)]
+    dictionary = corpora.Dictionary([tokens])  # Create a dictionary from the tokens
+    corpus = [dictionary.doc2bow(tokens)]  # Create a Bag-of-Words representation
 
-    lda_model = models.LdaModel(corpus, num_topics=2, id2word=dictionary, passes=15)
+    lda_model = models.LdaModel(corpus, num_topics=2, id2word=dictionary, passes=15)  # Train LDA model with 2 topics
 
-    topics = lda_model.print_topics(num_words=5)
+    topics = lda_model.print_topics(num_words=5)  # Get the top words for each topic
     
-    explanation = generate_explanation(text, tokens, topics)
+    explanation = generate_explanation(text, tokens, topics)  # Generate explanation for the results
 
-    return render_template('index.html', explanation=explanation)
+    return render_template('index.html', explanation=explanation)  # Render the results in the template
 
 def generate_explanation(text, tokens, topics):
     explanation = f"""
@@ -117,4 +117,4 @@ def generate_explanation(text, tokens, topics):
     return explanation
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True)  # Run the Flask application
